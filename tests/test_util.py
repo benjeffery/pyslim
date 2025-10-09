@@ -1,13 +1,10 @@
-"""
-Test cases for utility functions.
-"""
-import pytest
-import warnings
 import numpy as np
+import pytest
 
 import pyslim
 
-class TestUniqueLabelsByGroup():
+
+class TestUniqueLabelsByGroup:
 
     def verify_unique_labels_by_group(self, group, label, minlength):
         with pytest.warns(FutureWarning):
@@ -21,21 +18,21 @@ class TestUniqueLabelsByGroup():
 
     def test_all_same(self):
         n = 10
-        group = np.repeat(1, 10)
+        group = np.repeat(1, n)
         label = np.arange(10)
         self.verify_unique_labels_by_group(group, label, 1)
         with pytest.warns(FutureWarning):
             x = pyslim.util.unique_labels_by_group(group, label, 1)
         assert len(x) == 2
-        assert x[0] == True
-        assert x[1] == False
-        label = np.repeat(5, 10)
+        assert x[0] is True
+        assert x[1] is False
+        label = np.repeat(5, n)
         self.verify_unique_labels_by_group(group, label, 1)
         with pytest.warns(FutureWarning):
             x = pyslim.util.unique_labels_by_group(group, label, 1)
         assert len(x) == 2
-        assert x[0] == True
-        assert x[1] == True
+        assert x[0] is True
+        assert x[1] is True
 
     def test_all_unique(self):
         ng = 10
@@ -63,16 +60,19 @@ class TestUniqueLabelsByGroup():
                         label = minl + np.random.choice(np.arange(nl), size=n)
                         self.verify_unique_labels_by_group(group, label, ng)
                         # int32 labels
-                        self.verify_unique_labels_by_group(group, label.astype("int32"), ng)
+                        self.verify_unique_labels_by_group(
+                            group, label.astype("int32"), ng
+                        )
                         # and float labels
-                        label = minl + np.random.choice(np.random.uniform(0, 1, nl), size=n)
+                        label = minl + np.random.choice(
+                            np.random.uniform(0, 1, nl), size=n
+                        )
                         self.verify_unique_labels_by_group(group, label, ng)
 
     def test_unused_labels(self):
         with pytest.warns(FutureWarning):
             x = pyslim.unique_labels_by_group(
-                group=np.array([1, 1, 4], dtype='int'),
-                label=np.array([2, 2, 2], dtype='int')
+                group=np.array([1, 1, 4], dtype="int"),
+                label=np.array([2, 2, 2], dtype="int"),
             )
         assert np.all(x)
-

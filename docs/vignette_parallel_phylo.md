@@ -135,15 +135,18 @@ from the root) and then parallelize the runs of sister branches somehow.
 ```python
 def phylo_recursion(parent, df):
     print(parent)
-    childs = df[df.parent==parent]
+    childs = df[df.parent == parent]
     print(childs)
     if len(childs) == 0:
         return
     # you could parallelize this loop over childs with same parent
     for i, row in childs.iterrows():
         if not os.path.exists(row.outfile):
-            os.system(f"slim -d \"infile='{row.infile}'\" -d popsize={row.popsize} -d num_gens={row.edgelen} -d \"outfile='{row.child}.trees'\" phylo_bgs.slim")
+            os.system(
+                f"slim -d \"infile='{row.infile}'\" -d popsize={row.popsize} -d num_gens={row.edgelen} -d \"outfile='{row.child}.trees'\" phylo_bgs.slim"
+            )
             phylo_recursion(row.child, df)
+
 
 phylo_recursion("", df)
 ```

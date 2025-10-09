@@ -1,10 +1,5 @@
-from __future__ import print_function
-
-import platform
-import warnings
 import json
-import msprime
-import tskit
+import platform
 
 from . import _version
 
@@ -22,30 +17,16 @@ def slim_provenance_version(provenance):
     :return: A (bool, string) tuple (is_slim, version).
     """
     record = json.loads(provenance.record)
-    software_name = "unknown"
+    software = record.get("software", {})
+    software_name = software.get("name", record.get("program", "unknown"))
     file_version = "unknown"
-    # >= SLiM 3.1 // file version >= 0.2
-    try:
-        software_name = record["software"]["name"]
-    except:
-        pass
 
     if software_name == "SLiM":
-        try:
-            file_version = record["slim"]["file_version"]
-        except:
-            pass
+        slim_info = record.get("slim", {})
+        file_version = slim_info.get("file_version", file_version)
     else:
-        # SLiM 3.0 // file version 0.1
-        try:
-            software_name = record["program"]
-        except:
-            pass
-        try:
-            file_version = record["file_version"]
-        except:
-            pass
-    is_slim = (software_name == "SLiM")
+        file_version = record.get("file_version", file_version)
+    is_slim = software_name == "SLiM"
     return is_slim, file_version
 
 
@@ -55,11 +36,8 @@ def get_environment():
     currently running.
     """
     env = {
-        "libraries": {
-        },
-        "parameters" : {
-            "command" : []
-        },
+        "libraries": {},
+        "parameters": {"command": []},
         "os": {
             "system": platform.system(),
             "node": platform.node(),
@@ -70,7 +48,7 @@ def get_environment():
         "python": {
             "implementation": platform.python_implementation(),
             "version": platform.python_version_tuple(),
-        }
+        },
     }
     return env
 
@@ -82,12 +60,10 @@ def make_pyslim_provenance_dict():
     document = {
         "schema_version": "1.0.0",
         "software": {
-            "name" : "pyslim",
+            "name": "pyslim",
             "version": __version__,
-            },
-        "parameters": {
-            "command": {}
-            },
-        "environment": get_environment()
+        },
+        "parameters": {"command": {}},
+        "environment": get_environment(),
     }
     return document

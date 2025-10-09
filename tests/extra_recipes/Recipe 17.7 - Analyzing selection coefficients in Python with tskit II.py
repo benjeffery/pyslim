@@ -1,5 +1,4 @@
 # Keywords: Python, tree-sequence recording, tree sequence recording
-
 import tskit
 
 ts = tskit.load("recipe_17.7.trees")
